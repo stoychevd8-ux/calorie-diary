@@ -180,13 +180,20 @@ Latte|40|2|3.5|2|ml
       mealsEl.appendChild(sec);
     });
 
-    var strip = $('dateStrip'); strip.innerHTML = '';
+        var strip = $('dateStrip'); strip.innerHTML = '';
+    var today = new Date();
     for (var i = -3; i <= 3; i++) {
-      var d = new Date(); d.setDate(d.getDate() + i);
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      var dStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      
       var b = document.createElement('button'); 
-      b.className = 'day-btn' + (d.toISOString().split('T')[0] === ds ? ' active' : '');
+      b.className = 'day-btn' + (dStr === ds ? ' active' : '');
       b.innerHTML = d.toLocaleDateString('en-US', { weekday: 'narrow' }) + '<b>' + d.getDate() + '</b>';
-      b.onclick = function() { day = d; render(); };
+      
+      (function(dateObj) {
+        b.onclick = function() { day = dateObj; render(); };
+      })(d);
+      
       strip.appendChild(b);
     }
 
@@ -378,12 +385,20 @@ Latte|40|2|3.5|2|ml
       $('wWeight').value = state.plan.weight || '';
       $('wHeight').value = state.plan.height || '';
     }
-    if (n === 4) {
+        if (n === 4) {
       var bmr = 10*(+$('wWeight').value || 70) + 6.25*(+$('wHeight').value || 175) - 5*(+$('wAge').value || 25) + ($('wSex').value === 'male' ? 5 : -161);
       var target = bmr * (+state.plan.activity || 1.55); 
       $('wizPreview').innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;">Estimated Target</div><div style="font-size:32px;font-family:var(--font-display);font-weight:800; color:var(--ink);margin-top:4px;">' + Math.round(target) + ' kcal</div>';
+      
+      // NEW: Auto-fill Target Weight based on current weight and goal
+      var currentW = +$('wWeight').value;
+      var targetInput = $('wTarget');
+      if (!targetInput.value && currentW) {
+        if (state.plan.mode === 'cut') targetInput.value = (currentW - 5).toFixed(1);
+        else if (state.plan.mode === 'bulk') targetInput.value = (currentW + 5).toFixed(1);
+        else targetInput.value = currentW.toFixed(1);
+      }
     }
-  }
 
   $('wizNext').onclick = function() {
     if (wizStep < 4) { 
