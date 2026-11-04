@@ -138,7 +138,6 @@ Latte|40|2|3.5|2|ml
       { id: 'p', val: sum('p'), goal: g.p, unit: 'g' },
       { id: 'c', val: sum('c'), goal: g.c, unit: 'g' },
       { id: 'f', val: sum('f'), goal: g.f, unit: 'g' },
-      { id: 'fi', val: sum('fi'), goal: g.fi, unit: 'g' },
       { id: 'su', val: sum('su'), goal: g.su, unit: 'g' },
       { id: 'na', val: sum('na'), goal: g.na, unit: 'mg' }
     ];
@@ -180,7 +179,7 @@ Latte|40|2|3.5|2|ml
       mealsEl.appendChild(sec);
     });
 
-        var strip = $('dateStrip'); strip.innerHTML = '';
+    var strip = $('dateStrip'); strip.innerHTML = '';
     var today = new Date();
     for (var i = -3; i <= 3; i++) {
       var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
@@ -385,12 +384,11 @@ Latte|40|2|3.5|2|ml
       $('wWeight').value = state.plan.weight || '';
       $('wHeight').value = state.plan.height || '';
     }
-        if (n === 4) {
+    if (n === 4) {
       var bmr = 10*(+$('wWeight').value || 70) + 6.25*(+$('wHeight').value || 175) - 5*(+$('wAge').value || 25) + ($('wSex').value === 'male' ? 5 : -161);
       var target = bmr * (+state.plan.activity || 1.55); 
       $('wizPreview').innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;">Estimated Target</div><div style="font-size:32px;font-family:var(--font-display);font-weight:800; color:var(--ink);margin-top:4px;">' + Math.round(target) + ' kcal</div>';
       
-      // NEW: Auto-fill Target Weight based on current weight and goal
       var currentW = +$('wWeight').value;
       var targetInput = $('wTarget');
       if (!targetInput.value && currentW) {
@@ -399,6 +397,7 @@ Latte|40|2|3.5|2|ml
         else targetInput.value = currentW.toFixed(1);
       }
     }
+  }
 
   $('wizNext').onclick = function() {
     if (wizStep < 4) { 
@@ -416,7 +415,6 @@ Latte|40|2|3.5|2|ml
       
       state.goals.cal = Math.round(targetCal);
       
-      // NEW MACRO GOALS LOGIC
       state.goals.p = +$('wPro').value || Math.round(targetCal * 0.3 / 4);
       state.goals.c = +$('wCarb').value || Math.round(targetCal * 0.4 / 4);
       state.goals.f = +$('wFat').value || Math.round(targetCal * 0.3 / 9);
