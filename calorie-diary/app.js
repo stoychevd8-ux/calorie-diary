@@ -13,7 +13,8 @@
     setupDone: false 
   };
   
-  var picked = null, day = new Date();
+   var picked = null, day = new Date();
+  day.setHours(12, 0, 0, 0); // Force to noon to prevent timezone day-shifting
 
   var FOODS = `
 Apple|52|0.3|14|0.2
@@ -119,7 +120,7 @@ Latte|40|2|3.5|2|ml
   }
 
   function render() {
-    var ds = day.toISOString().split('T')[0];
+    var ds = day.getFullYear() + '-' + String(day.getMonth()+1).padStart(2,'0') + '-' + String(day.getDate()).padStart(2,'0');
     var list = state.entries.filter(function (e) { return e.date === ds; });
     var sum = function(key) { return list.reduce(function(a, e){ return a + (e[key] || 0); }, 0); };
     
@@ -179,19 +180,27 @@ Latte|40|2|3.5|2|ml
       mealsEl.appendChild(sec);
     });
 
-    var strip = $('dateStrip'); strip.innerHTML = '';
+         var strip = $('dateStrip'); strip.innerHTML = '';
     var today = new Date();
     for (var i = -3; i <= 3; i++) {
+      // Create a date object based on the local year, month, and day + offset
       var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-      var dStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      
+      // Get the local date string (e.g., 2024-11-04)
+      var localDS = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
       
       var b = document.createElement('button'); 
-      b.className = 'day-btn' + (dStr === ds ? ' active' : '');
+      b.className = 'day-btn' + (localDS === ds ? ' active' : '');
       b.innerHTML = d.toLocaleDateString('en-US', { weekday: 'narrow' }) + '<b>' + d.getDate() + '</b>';
       
-      (function(dateObj) {
-        b.onclick = function() { day = dateObj; render(); };
-      })(d);
+      // FIX: Force the click to set the day variable to EXACTLY this local date
+      (function(y, m, dayNum) {
+        b.onclick = function() { 
+          day = new Date(y, m, dayNum);
+          day.setHours(12, 0, 0, 0);
+          render(); 
+        };
+      })(d.getFullYear(), d.getMonth(), d.getDate());
       
       strip.appendChild(b);
     }
@@ -283,7 +292,7 @@ Latte|40|2|3.5|2|ml
     var name = $('fName').value, cal = parseFloat($('fCal').value);
     if (!name || isNaN(cal)) { $('addErr').textContent = 'Name and Calories are required.'; return; }
     state.entries.push({
-      id: Date.now().toString(), date: day.toISOString().split('T')[0], meal: $('fMeal').value,
+      id: Date.now().toString(), date: day.getFullYear() + '-' + String(day.getMonth()+1).padStart(2,'0') + '-' + String(day.getDate()).padStart(2,'0'),meal: $('fMeal').value,
       name: name, cal: cal, 
       p: parseFloat($('fPro').value)||0, 
       c: parseFloat($('fCarb').value)||0, 
@@ -295,10 +304,9 @@ Latte|40|2|3.5|2|ml
     save(); $('addOverlay').hidden = true; render();
   };
 
-  $('wPlus').onclick = function() { var ds = day.toISOString().split('T')[0]; state.water[ds] = (state.water[ds]||0) + 250; save(); render(); };
-  $('wMinus').onclick = function() { var ds = day.toISOString().split('T')[0]; state.water[ds] = Math.max((state.water[ds]||0) - 250, 0); save(); render(); };
-  
-  $('wSave').onclick = function() { var ds = day.toISOString().split('T')[0]; var v = parseFloat($('wInput').value); if(v) { state.weights[ds] = v; save(); render(); } };
+      $('wPlus').onclick = function() { var ds = day.getFullYear() + '-' + String(day.getMonth()+1).padStart(2,'0') + '-' + String(day.getDate()).padStart(2,'0'); state.water[ds] = (state.water[ds]||0) + 250; save(); render(); };
+  $('wMinus').onclick = function() { var ds = day.getFullYear() + '-' + String(day.getMonth()+1).padStart(2,'0') + '-' + String(day.getDate()).padStart(2,'0'); state.water[ds] = Math.max((state.water[ds]||0) - 250, 0); save(); render(); };
+   $('wSave').onclick = function() { var ds = day.getFullYear() + '-' + String(day.getMonth()+1).padStart(2,'0') + '-' + String(day.getDate()).padStart(2,'0'); var v = parseFloat($('wInput').value); if(v) { state.weights[ds] = v; save(); render(); } };
 
   $('navDiary').onclick = $('navDiary2').onclick = function() { $('screenDiary').hidden = false; $('screenPlan').hidden = true; };
   $('navPlan').onclick = $('navPlan2').onclick = function() { $('screenDiary').hidden = true; $('screenPlan').hidden = false; };
