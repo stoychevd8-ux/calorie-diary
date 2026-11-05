@@ -111,7 +111,8 @@
         <div class="field"><label>Fat (g)</label><input id="wFat" type="number" placeholder="70"></div>
         <div class="field"><label>Water (ml)</label><input id="wWater" type="number" placeholder="2000"></div>
       </div>
-      <div class="card" id="wizPreview" style="margin-top:12px; text-align:center; border-color:var(--accent); background-color:rgba(18,184,134,0.05);"></div>
+          <div class="card" id="wizPreview" style="margin-top:12px; text-align:center; border-color:var(--accent); background-color:rgba(18,184,134,0.05);"></div>
+      <div id="timelineDiv" style="text-align:center;"></div>
     </section>
   </div>
 
@@ -238,9 +239,9 @@
     <h2>Details</h2>
     <div class="grid two">
       <div class="field"><label>Sex</label><select id="pSex"><option value="male">Male</option><option value="female">Female</option></select></div>
-      <div class="field"><label>Age</label><input id="pAge" type="number" placeholder="25"></div>
-      <div class="field"><label>Weight (kg)</label><input id="pWeight" type="number" placeholder="75"></div>
-      <div class="field"><label>Height (cm)</label><input id="pHeight" type="number" placeholder="175"></div>
+      <div class="field"><label>Age</label><input id="pAge" type="number" min="14" max="100" placeholder="25"></div>
+      <div class="field"><label>Weight (kg)</label><input id="pWeight" type="number" min="30" max="300" placeholder="75"></div>
+      <div class="field"><label>Height (cm)</label><input id="pHeight" type="number" min="120" max="250" placeholder="175"></div>
       <div class="field" style="grid-column:span 2;"><label>Activity</label>
         <select id="pActivity">
           <option value="1.2">Sedentary</option>
@@ -255,7 +256,7 @@
   </div>
 
   <div class="card" id="planResult" style="text-align:center; padding:32px 20px;"></div>
-
+<button class="primary" id="savePlanBtn" style="margin-top: 12px; background: var(--accent); color: #fff; display: none;">Save & Apply Changes</button>
   <nav class="bottom-nav">
     <button class="nav-item" id="navDiary2">
       <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -286,12 +287,14 @@
         <svg viewBox="0 0 24 24" style="width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:2;"><path d="M3 7V5a2 2 0 0 1 2-2h2m10 0h2a2 2 0 0 1 2 2v2m0 10v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
         Scan Barcode
       </button>
-      <div id="scanPanel" hidden style="margin-top:12px;text-align:center;">
+            <div id="scanPanel" hidden style="margin-top:12px;text-align:center;">
         <video id="barcodeVideo" playsinline muted></video>
         <p id="barcodeStatus" class="hint"></p>
-        <button class="tab" onclick="document.getElementById('scanPanel').hidden = true; window.stopBarcodeScan();" style="background:var(--surface-2);width:100%; border:2px solid var(--line);">Cancel Scan</button>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" class="tab" onclick="toggleFlashlight()" style="flex:1; background:var(--surface-2); border:2px solid var(--line);">💡 Flashlight</button>
+          <button type="button" class="tab" onclick="document.getElementById('scanPanel').hidden = true; window.stopBarcodeScan();" style="flex:1; background:var(--surface-2); border:2px solid var(--line);">Cancel</button>
+        </div>
       </div>
-    </div>
 
     <div class="field" style="margin-bottom:16px;">
       <label>Search Database</label>
