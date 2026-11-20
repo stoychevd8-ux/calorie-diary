@@ -153,17 +153,44 @@ Latte|40|2|3.5|2|ml`.trim().split('\n').map(function (l) {
     drawWeightChart();
   }
 
-  function drawWeightChart() {
+    function drawWeightChart() {
     var keys = Object.keys(state.weights).sort();
-    if (keys.length < 2) { $('wChart').innerHTML = ''; return; }
+    var chartEl = $('wChart');
+    var summaryEl = $('wSummary');
+    
+    if (keys.length === 0) {
+      chartEl.innerHTML = '<text x="160" y="50" text-anchor="middle" fill="var(--ink-2)" font-size="12">No weight logged yet</text>';
+      if(summaryEl) summaryEl.textContent = '';
+      return;
+    }
+
+    var latestWeight = state.weights[keys[keys.length - 1]];
+    if(summaryEl) summaryEl.textContent = latestWeight + ' kg';
+
     var min = Math.min(...keys.map(k=>state.weights[k])) - 1;
     var max = Math.max(...keys.map(k=>state.weights[k])) + 1;
+    
+    if (min === max) { min -= 1; max += 1; }
+
     var pts = keys.map(function(k, i) {
-      var x = (i / (keys.length - 1)) * 300 + 10;
-      var y = 90 - ((state.weights[k] - min) / (max - min)) * 80;
-      return x + ',' + y;
-    }).join(' ');
-    $('wChart').innerHTML = '<polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' + pts + '"/>';
+      var x = keys.length === 1 ? 160 : (i / (keys.length - 1)) * 280 + 20;
+      var y = 80 - ((state.weights[k] - min) / (max - min)) * 60;
+      return { x: x, y: y, val: state.weights[k] };
+    });
+
+    var svgHtml = '';
+    
+    if (pts.length > 1) {
+      var pointsStr = pts.map(function(p) { return p.x + ',' + p.y; }).join(' ');
+      svgHtml += '<polyline fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' + pointsStr + '"/>';
+    }
+
+    pts.forEach(function(p) {
+      svgHtml += '<circle cx="' + p.x + '" cy="' + p.y + '" r="5" fill="var(--accent)"/>';
+      svgHtml += '<text x="' + p.x + '" y="' + (p.y - 10) + '" text-anchor="middle" fill="var(--ink)" font-size="10" font-weight="bold">' + p.val + '</text>';
+    });
+
+    chartEl.innerHTML = svgHtml;
   }
 
   function openAdd(meal) {
