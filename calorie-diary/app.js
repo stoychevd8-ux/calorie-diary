@@ -57,13 +57,9 @@ Latte|40|2|3.5|2|ml`.trim().split('\n').map(function (l) {
       else seed();
     } catch (e) { seed(); }
   }
-  
-  function seed() {
-    var today = getLocalDateStr(new Date());
-    state.entries = [
-      { id: '1', date: today, meal: 'Breakfast', name: 'Oatmeal with banana', cal: 310, p: 9, c: 58, f: 5, fi: 5, su: 14, na: 120 },
-      { id: '2', date: today, meal: 'Lunch', name: 'Chicken and rice bowl', cal: 640, p: 46, c: 72, f: 14, fi: 4, su: 3, na: 780 }
-    ];
+    function seed() {
+    // Start with a completely empty diary
+    state.entries = [];
   }
 
   function getEmoji(name) {
