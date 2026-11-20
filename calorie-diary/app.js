@@ -248,7 +248,17 @@ Latte|40|2|3.5|2|ml`.trim().split('\n').map(function (l) {
 
   $('wPlus').onclick = function() { var ds = getLocalDateStr(day); state.water[ds] = (state.water[ds]||0) + 250; save(); render(); };
   $('wMinus').onclick = function() { var ds = getLocalDateStr(day); state.water[ds] = Math.max((state.water[ds]||0) - 250, 0); save(); render(); };
-  $('wSave').onclick = function() { var ds = getLocalDateStr(day); var v = parseFloat($('wInput').value); if(v) { state.weights[ds] = v; save(); render(); } };
+   $('wSave').onclick = function() { 
+    var ds = getLocalDateStr(day); 
+    var v = parseFloat($('wInput').value); 
+    if(v) { 
+      state.weights[ds] = v; 
+      save(); 
+      render(); 
+      $('wInput').blur(); 
+      alert('Weight saved!'); 
+    } 
+  };
 
   $('navDiary').onclick = $('navDiary2').onclick = function() { $('screenDiary').hidden = false; $('screenPlan').hidden = true; };
   $('navPlan').onclick = $('navPlan2').onclick = function() { $('screenDiary').hidden = true; $('screenPlan').hidden = false; };
